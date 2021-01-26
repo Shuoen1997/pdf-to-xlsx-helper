@@ -1,5 +1,4 @@
 pdfminer
 XlsxWriter
 flask
-Flask-Uploads
 Werkzeug==0.16.0
