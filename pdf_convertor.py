@@ -56,7 +56,10 @@ def is_page_number_or_next_line_symbol(text):
 
 
 def is_text_group_number_only(text_group):
-    return not any([not is_number_only(v) for v in text_group])
+    for v in text_group:
+        if not is_number_only(v):
+            return False
+    return True
 
 def is_number_only(text):
     import re 
