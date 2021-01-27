@@ -3,27 +3,40 @@ import os
 from werkzeug.utils import secure_filename
 from pdf_convertor import *
 
-app = Flask(__name__, template_folder='templates')
-
-UPLOAD_FOLDER = os.getcwd() + '/pdf_folder'
-DOWNLOAD_FOLDER = os.getcwd() + '/xlsx_folder'
-app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
-app.config['DOWNLOAD_FOLDER'] = DOWNLOAD_FOLDER
-app.config['ALLOWED_FILE_TYPE'] = ['PDF']
-app.secret_key = 'asfjdijawpeiftt'
-
-
-def is_allowed_file_type(filename):
-    file_extension = filename.split('.')[-1].upper()
-    return file_extension in app.config['ALLOWED_FILE_TYPE']
-
-
 upload_filename_full = ''
 output_filename = ''
 
 
+def create_app():
+    app = Flask(__name__, template_folder='templates')
+    UPLOAD_FOLDER = os.getcwd() + '/pdf_folder'
+    DOWNLOAD_FOLDER = os.getcwd() + '/xlsx_folder'
+
+    if not os.path.exists(UPLOAD_FOLDER):
+        os.mkdir(UPLOAD_FOLDER)
+    if not os.path.exists(DOWNLOAD_FOLDER):
+        os.mkdir(DOWNLOAD_FOLDER)
+
+    app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+    app.config['DOWNLOAD_FOLDER'] = DOWNLOAD_FOLDER
+    app.config['ALLOWED_FILE_TYPE'] = ['PDF']
+    app.config['SESSION_TYPE'] = 'filesystem'
+    app.secret_key = 'asfjdijawpeiftt'
+    return app
+
+
+app = create_app()
+
+
 @app.route('/', methods=['POST', 'GET'])
 def upload_file():
+    def is_allowed_file_type(filename):
+        """
+        We check to make sure the uploaded file is PDF
+        """
+        file_extension = filename.split('.')[-1].upper()
+        return file_extension in app.config['ALLOWED_FILE_TYPE']
+
     if request.method == 'POST':
         file = request.files['file']
         if not file:
@@ -77,22 +90,18 @@ def download_file():
 @app.route('/clear/', methods=['POST'])
 def clear():
     if request.method == 'POST':
+        # Reset these values and clear the folders to give a clean start
         global output_filename
         global upload_filename_full
         output_filename = ''
         upload_filename_full = ''
         for pdf_file in os.listdir(app.config['UPLOAD_FOLDER']):
-            print(pdf_file)
             os.remove(os.path.join(app.config['UPLOAD_FOLDER'], pdf_file))
         for xlsx_file in os.listdir(app.config['DOWNLOAD_FOLDER']):
-            print(xlsx_file)
             os.remove(os.path.join(app.config['DOWNLOAD_FOLDER'], xlsx_file))
         return redirect(url_for('upload_file'))
     return redirect(url_for('upload_file'))
 
 
 if __name__ == "__main__":
-    app.config['SESSION_TYPE'] = 'filesystem'
-    print(UPLOAD_FOLDER)
-    print(DOWNLOAD_FOLDER)
     app.run(debug=True)
