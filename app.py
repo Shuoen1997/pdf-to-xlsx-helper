@@ -61,9 +61,11 @@ def convert_file():
     if request.method == 'POST':
         if not app.config['UPLOAD_FILENAME']:
             return render_template('index.html', convert_message='File not found')
+        upload_filename_full = app.config['UPLOAD_FILENAME']
         text_success_message = extract_PDF_textbox(pdf_name=upload_filename_full)
-        app.config['OUTPUT_FILENAME'] = convert_to_xlsx(pdf_name=upload_filename_full)
+        output_filename = convert_to_xlsx(pdf_name=upload_filename_full)
         convert_message = f'{text_success_message}! {output_filename} generated'
+        app.config['OUTPUT_FILENAME'] = output_filename
         return render_template('index.html', convert_message=convert_message)
 
     return redirect(url_for('upload_file'))
