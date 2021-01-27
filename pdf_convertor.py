@@ -26,7 +26,7 @@ def extract_PDF_textbox(pdf_name=PDF_NAME):
                     text = text_line.get_text()
                     RESULT[text_group_index].append(text)
 
-    print(f"Coverted {text_group_index} group of texts from PDF")
+    return f"Converted {text_group_index} group of texts from PDF"
 
 
 def convert_to_xlsx(pdf_name=PDF_NAME):
@@ -53,7 +53,7 @@ def convert_to_xlsx(pdf_name=PDF_NAME):
 
     workbook.close()
     print(f'Created {index} row in xlsx after stripping number only row!')
-    return output_file_name
+    return output_file_name.split('/')[-1]
 
 
 def is_page_number_or_next_line_symbol(text):
