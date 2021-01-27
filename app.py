@@ -1,10 +1,7 @@
-from flask import Flask, request, render_template, send_from_directory, url_for, redirect, flash
+from flask import Flask, request, render_template, send_from_directory, url_for, redirect, flash, current_app
 import os
 from werkzeug.utils import secure_filename
 from pdf_convertor import *
-
-upload_filename_full = ''
-output_filename = ''
 
 
 def create_app():
@@ -21,7 +18,9 @@ def create_app():
     app.config['DOWNLOAD_FOLDER'] = DOWNLOAD_FOLDER
     app.config['ALLOWED_FILE_TYPE'] = ['PDF']
     app.config['SESSION_TYPE'] = 'filesystem'
-    app.secret_key = 'asfjdijawpeiftt'
+    app.config['SECRET_KEY'] = 'asfjdijawpeiftt'
+    app.config['UPLOAD_FILENAME'] = None
+    app.config['OUTPUT_FILENAME'] = None
     return app
 
 
@@ -49,9 +48,8 @@ def upload_file():
 
         if file:
             upload_filename = secure_filename(file.filename)
-            global upload_filename_full
-            upload_filename_full = os.path.join(app.config['UPLOAD_FOLDER'], upload_filename)
-            file.save(upload_filename_full)
+            app.config['UPLOAD_FILENAME'] = os.path.join(app.config['UPLOAD_FOLDER'], upload_filename)
+            file.save(app.config['UPLOAD_FILENAME'])
             flash(f'SUCCESS! {file.filename} is uploaded')
             return render_template('index.html')
 
@@ -61,13 +59,13 @@ def upload_file():
 @app.route('/convert/', methods=['POST', 'GET'])
 def convert_file():
     if request.method == 'POST':
-        global upload_filename_full
-        global output_filename
-        if not upload_filename_full:
+        if not app.config['UPLOAD_FILENAME']:
             return render_template('index.html', convert_message='File not found')
+        upload_filename_full = app.config['UPLOAD_FILENAME']
         text_success_message = extract_PDF_textbox(pdf_name=upload_filename_full)
         output_filename = convert_to_xlsx(pdf_name=upload_filename_full)
         convert_message = f'{text_success_message}! {output_filename} generated'
+        app.config['OUTPUT_FILENAME'] = output_filename
         return render_template('index.html', convert_message=convert_message)
 
     return redirect(url_for('upload_file'))
@@ -75,8 +73,8 @@ def convert_file():
 
 @app.route('/download/', methods=['POST', 'GET'])
 def download_file():
-    global output_filename
     if request.method == 'POST':
+        output_filename = app.config['OUTPUT_FILENAME']
         if not output_filename:
             return render_template('index.html', download_message='File does not exit, cannot download')
         return send_from_directory(app.config['DOWNLOAD_FOLDER'],
@@ -91,10 +89,8 @@ def download_file():
 def clear():
     if request.method == 'POST':
         # Reset these values and clear the folders to give a clean start
-        global output_filename
-        global upload_filename_full
-        output_filename = ''
-        upload_filename_full = ''
+        app.config['OUTPUT_FILENAME'] = None
+        app.config['UPLOAD_FILENAME'] = None
         for pdf_file in os.listdir(app.config['UPLOAD_FOLDER']):
             os.remove(os.path.join(app.config['UPLOAD_FOLDER'], pdf_file))
         for xlsx_file in os.listdir(app.config['DOWNLOAD_FOLDER']):
@@ -104,4 +100,4 @@ def clear():
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run(host='0.0.0.0', port=5000, debug=True)
