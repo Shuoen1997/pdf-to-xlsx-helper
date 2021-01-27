@@ -13,9 +13,11 @@ PDF_NAME = "pdf_folder/2021012201275_c.pdf"
 LINE_MARGIN = 0.7
 
 RESULT = {}
-def extract_PDF_textbox():
+
+
+def extract_PDF_textbox(pdf_name=PDF_NAME):
     text_group_index = 0
-    for page_layout in extract_pages(PDF_NAME, laparams=LAParams(line_margin=LINE_MARGIN)):
+    for page_layout in extract_pages(pdf_name, laparams=LAParams(line_margin=LINE_MARGIN)):
         for element in page_layout:
             if isinstance(element, LTTextBox):
                 text_group_index += 1
@@ -24,10 +26,11 @@ def extract_PDF_textbox():
                     text = text_line.get_text()
                     RESULT[text_group_index].append(text)
 
-    print(f"Coverted {text_group_index} group of texts from PDF")
+    return f"Converted {text_group_index} group of texts from PDF"
 
-def convert_to_xlsx():
-    output_file_name =  PDF_NAME.replace('pdf_folder/', 'xlsx_folder/').strip('.pdf') + '.xlsx'
+
+def convert_to_xlsx(pdf_name=PDF_NAME):
+    output_file_name = pdf_name.replace('pdf_folder/', 'xlsx_folder/').strip('.pdf') + '.xlsx'
     workbook = xlsxwriter.Workbook(output_file_name)
     worksheet = workbook.add_worksheet()
     # Expand the column A
@@ -39,37 +42,43 @@ def convert_to_xlsx():
         box = 'A' + str(index)
         if is_text_group_number_only(text_group):
             continue
-        
+
         s = ''.join(text_group)
         # We don't want page number either 
         if is_page_number_or_next_line_symbol(s):
             continue
-        
+
         worksheet.write(box, s)
         index += 1
 
     workbook.close()
     print(f'Created {index} row in xlsx after stripping number only row!')
+    return output_file_name.split('/')[-1]
+
 
 def is_page_number_or_next_line_symbol(text):
     return text[0] == '–' or text[0] == '\n'
 
 
 def is_text_group_number_only(text_group):
-    return not any([not is_number_only(v) for v in text_group])
+    for v in text_group:
+        if not is_number_only(v):
+            return False
+    return True
+
 
 def is_number_only(text):
-    import re 
+    import re
 
     pattern = re.compile('[(]*([0-9]*[,%]*[0-9]*)*[)]*([\ ])*([\n])*')
     return pattern.fullmatch(text)
+
 
 if __name__ == '__main__':
     if '_c' in PDF_NAME:
         print("正在轉換中文的PDF...")
     else:
         print("Converting English PDF...")
-    
+
     extract_PDF_textbox()
     convert_to_xlsx()
-    

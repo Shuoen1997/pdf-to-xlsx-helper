@@ -1,0 +1,97 @@
+<html>
+<head>
+    <title>
+        PDF -> XLSX CONVERTOR
+    </title>
+    <link rel="stylesheet" href="/static/style.css">
+    <link rel="stylesheet"
+          href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css"
+          integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" crossorigin="anonymous">
+</head>
+
+<body>
+<!-- File Uploading-->
+
+<div>
+    <div class="container">
+        <h1>
+            PDF -> XLSX CONVERTOR
+        </h1>
+        <h3>
+            Convert your PDFs into Spreadsheets in 3 simple steps
+        </h3>
+    </div>
+    <div class="container">
+        <div class="row">
+            <div class="column">
+                <div class="instruct-text">
+                    Step 1: Upload your PDF file
+                </div>
+                <form action="{{ url_for('upload_file') }}" method="POST" enctype="multipart/form-data"
+                      class="form-group">
+                    <br>
+                    <input type=file name="file" class="form-control-file" id="upload-file-id"/><br>
+                    <button type="submit" class="btn btn-outline-primary">UPLOAD &#128228</button>
+                    <br>
+                    {% with messages = get_flashed_messages() %}
+                        {% if messages %}
+                            <div class="alert-text"> {{ messages[0] }} </div>
+                        {% endif %}
+                    {% endwith %}
+                </form>
+            </div>
+            <div class="column">
+                <div class="instruct-text">
+                    Step 2: Convert your PDF to spreadsheet
+                </div>
+                <div class="form-group">
+                    <form action="{{ url_for('convert_file') }}" method="POST">
+                        <button type="submit" class="btn btn-outline-warning">CONVERT &#129498</button>
+                    </form>
+                    {% if convert_message %}
+                        <div class="alert-text"> {{ convert_message }}</div>
+                    {% endif %}
+                </div>
+
+            </div>
+            <div class="column">
+                <div class="instruct-text">
+                    Step 3: Download the result
+                </div>
+                <div class="form-group">
+                    <form action="{{ url_for('download_file') }}" method="POST">
+                        <button type="submit" class="btn btn-outline-success">DOWNLOAD &#128512</button>
+                    </form>
+                    {% if download_message %}
+                        <div class="alert-text"> {{ download_message }}</div>
+                    {% endif %}
+                </div>
+
+            </div>
+            <div class="column">
+                <div class="instruct-text">
+                    (Start over to convert another PDF)
+                </div>
+                <div class="form-group">
+                    <form action="{{ url_for('clear') }}" method="POST">
+                        <button type="submit" class="btn btn-outline-info">START OVER &#128281</button>
+                    </form>
+                </div>
+
+            </div>
+        </div>
+
+    </div>
+</div>
+<script src="https://code.jquery.com/jquery-3.3.1.slim.min.js"
+        integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo"
+        crossorigin="anonymous"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+</body>
+
+</html>

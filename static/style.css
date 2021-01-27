@@ -1,0 +1,37 @@
+.container {
+    alignment: center;
+    border-style: solid;
+    border-color: cornflowerblue;
+    margin: auto;
+    padding: 50px;
+    text-align: center;
+}
+
+.column {
+    float: left;
+    width: 25%;
+    padding: 20px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.row:after {
+    content: "";
+    display: table;
+    clear: both;
+}
+
+.instruct-text {
+    color: black;
+}
+
+.alert-text {
+    color: cadetblue;
+    font-size: xx-small;
+}
+
+
+
+
