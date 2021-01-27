@@ -4,7 +4,7 @@ Step 1. Make sure you have python3.6+ installed!
 
 Step 2. And install the dependencies thru:
 
-`pip3 install requirements.txt`
+`pip3 install -r requirements.txt`
 
 Step 3. Move the PDF file you want to convert into the `pdf_folder` 
 
