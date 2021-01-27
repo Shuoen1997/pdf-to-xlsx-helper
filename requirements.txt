@@ -1,4 +1,4 @@
-pdfminer
+pdfminer.six
 XlsxWriter
 flask
 Werkzeug==0.16.0
