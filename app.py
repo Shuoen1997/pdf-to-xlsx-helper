@@ -84,9 +84,9 @@ def clear():
         for pdf_file in os.listdir(app.config['UPLOAD_FOLDER']):
             print(pdf_file)
             os.remove(os.path.join(app.config['UPLOAD_FOLDER'], pdf_file))
-        for xslx_file in os.listdir(app.config['DOWNLOAD_FOLDER']):
-            print(xslx_file)
-            os.remove(os.path.join(app.config['DOWNLOAD_FOLDER'], xslx_file))
+        for xlsx_file in os.listdir(app.config['DOWNLOAD_FOLDER']):
+            print(xlsx_file)
+            os.remove(os.path.join(app.config['DOWNLOAD_FOLDER'], xlsx_file))
         return redirect(url_for('upload_file'))
     return redirect(url_for('upload_file'))
 
